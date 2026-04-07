@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>嘉大民雄校區地圖</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            font-family: sans-serif;
+        }
+
+        /* 地圖容器，確保點點跟著地圖縮放 */
+        #map-container {
+            position: relative;
+            max-width: 1000px; /* 地圖最大寬度，可自己改 */
+            margin: 0 auto;
+            border: 2px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 地圖圖片本身 */
+        #map-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: crosshair; /* 滑鼠變成十字，方便抓座標 */
+        }
+
+        /* --- ThingLink 風格熱點設計 --- */
+        .hotspot {
+            position: absolute;
+            transform: translate(-50%, -50%); /* 確保座標在圓點正中心 */
+            width: 15px;
+            height: 15px;
+            background-color: white;
+            border: 4px solid var(--theme-color, #00e5ff); /* 讀取資料區的顏色 */
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* 呼吸燈動畫效果 */
+        .hotspot::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-color: var(--theme-color, #00e5ff);
+            border-radius: 50%;
+            opacity: 0.4;
+            z-index: -1;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* 滑鼠移上去顯示建築物名稱 */
+        .hotspot:hover::before {
+            content: attr(data-name);
+            position: absolute;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            white-space: nowrap;
+            pointer-events: none; /* 防止干擾點擊 */
+        }
+
+        /* 抓座標用的小工具面版 */
+        #coord-helper {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: #00ffcc;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="coord-helper">點擊地圖獲取座標...</div>
+
+    <div id="map-container">
+        <img id="map-image" src="Minxiong_map.png" alt="校區地圖">
+        </div>
+
+    <script>
+        // ==========================================
+        // 🌟 超好改資料區：你要加減點點都在這裡設定！
+        // x 和 y 是「百分比 (0~100)」，這樣地圖縮放才不會跑位
+        // ==========================================
+        const locations = [
+            {
+                id: 1,
+                name: "初教館",
+                x: 48.9, // 橫向位置 (左到右)
+                y: 49.6, // 直向位置 (上到下)
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的初教館環景網址.com"
+            },
+            {
+                id: 2,
+                name: "圖書館",
+                x: 53.7,  
+                y: 46.4,  
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的圖書館環景網址.com"
+            },
+            {
+                id: 3,
+                name: "民雄二宿",
+                x: 48.4,
+                y: 68.9,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄二宿環景網址.com"
+            },
+            {
+                id: 4,
+                name: "民雄一宿",
+                x: 41.3,
+                y: 65.0,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄一宿環景網址.com"
+            },
+            {
+                id: 5,
+                name: "學員餐廳",
+                x: 44.5,
+                y: 67.2,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄二宿環景網址.com"
+            },
+            {
+                id: 6,
+                name: "行政大樓",
+                x: 44.3,
+                y: 52.6,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄二宿環景網址.com"
+            },
+            {
+                id: 7,
+                name: "教育館",
+                x: 58.1,
+                y: 42.7,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄二宿環景網址.com"
+            },
+            {
+                id: 8,
+                name: "體育館（樂育堂）",
+                x: 54.0,
+                y: 66.8,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄二宿環景網址.com"
+            },
+            {
+                id: 9,
+                name: "新藝樓",
+                x: 34.8,
+                y: 20.5,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄二宿環景網址.com"
+            },
+            {
+                id: 10,
+                name: "科學館",
+                x: 25.8,
+                y: 49.0,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄二宿環景網址.com"
+            },
+            {
+                id: 11,
+                name: "人文館",
+                x: 19.5,
+                y: 44.9,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄二宿環景網址.com"
+            },
+            {
+                id: 12,
+                name: "大學館（禮堂）",
+                x: 32.2,
+                y: 39.7,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄二宿環景網址.com"
+            },
+            {
+                id: 13,
+                name: "創意樓",
+                x: 45.4,
+                y: 32.2,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄二宿環景網址.com"
+            },
+            {
+                id: 14,
+                name: "文薈廳",
+                x: 25.6,
+                y: 26.9,
+                color: "#00e5ff", // 亮藍色
+                link: "https://你的民雄二宿環景網址.com"
+            },
+        ];
+
+        // ==========================================
+        // 以下是主程式區，通常不需要去動它
+        // ==========================================
+        const container = document.getElementById('map-container');
+        const mapImage = document.getElementById('map-image');
+        const coordHelper = document.getElementById('coord-helper');
+
+        // 1. 自動把資料區的點點畫到地圖上
+        locations.forEach(loc => {
+            const dot = document.createElement('div');
+            dot.className = 'hotspot';
+            dot.style.left = loc.x + '%';
+            dot.style.top = loc.y + '%';
+            dot.style.setProperty('--theme-color', loc.color); // 套用你設定的顏色
+            dot.setAttribute('data-name', loc.name); // 設定名稱，hover時顯示
+
+            // 設定點擊事件：跳轉到環景網址 (新分頁)
+            dot.addEventListener('click', () => {
+                if (loc.link) window.open(loc.link, '_blank');
+            });
+
+            container.appendChild(dot);
+        });
+
+        // 2. 開發者抓座標輔助工具 (點擊地圖時觸發)
+        mapImage.addEventListener('click', function(event) {
+            // 計算點擊位置的百分比 (小數點後一位)
+            const rect = mapImage.getBoundingClientRect();
+            const xPercent = ((event.clientX - rect.left) / rect.width * 100).toFixed(1);
+            const yPercent = ((event.clientY - rect.top) / rect.height * 100).toFixed(1);
+            
+            // 顯示在左下角黑框
+            coordHelper.innerHTML = `
+                剛剛點擊的位置：<br>
+                <b>x: ${xPercent},</b><br>
+                <b>y: ${yPercent},</b><br>
+                <span style="font-size:12px; color:#aaa;">(把這兩行抄進資料區就好)</span>
+            `;
+            
+            // 同時印在 F12 開發者工具裡，方便複製
+            console.log(`x: ${xPercent}, \ny: ${yPercent},`);
+        });
+    </script>
+</body>
+</html>
