@@ -147,7 +147,9 @@
 
   // Set handler for scene switch.
   scenes.forEach(function(scene) {
-    var el = document.querySelector('#sceneList .scene[data-id="' + scene.data.id + '"]');
+  var el = document.querySelector('#sceneList .scene[data-id="' + scene.data.id + '"]');
+  
+  if (el) {  // 🌟 幫它加一個防護罩：如果找不到按鈕，就跳過不要當機！
     el.addEventListener('click', function() {
       switchScene(scene);
       // On mobile, hide scene list after selecting a scene.
@@ -155,7 +157,8 @@
         hideSceneList();
       }
     });
-  });
+  }          // 🌟 記得這裡要補上大括號關起來
+});
 
   // DOM elements for view controls.
   var viewUpElement = document.querySelector('#viewUp');
