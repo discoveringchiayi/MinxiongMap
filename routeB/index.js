@@ -389,7 +389,7 @@
     return null;
   }
 
- var params = new URLSearchParams(window.location.search);
+var params = new URLSearchParams(window.location.search);
   var p = parseInt(params.get('p'));
   if (!isNaN(p) && scenes[p]) {
     switchScene(scenes[p]); // 如果網址有密碼，就去密碼指定的房間
