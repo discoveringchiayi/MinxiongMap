@@ -42,6 +42,12 @@ var APP_DATA = {
           "pitch": 0.061448734625209056,
           "title": "綠園一舍",
           "text": "<br>"
+        },
+        {
+          "yaw": -1.5536309387344343,
+          "pitch": 0.08452220286296175,
+          "title": "<a href=\"../routeB/index.html?p=9\" style=\"text-decoration: underline; font-size: 24px;\">返回 B 路線 (B5)</a>",
+          "text": ""
         }
       ]
     },

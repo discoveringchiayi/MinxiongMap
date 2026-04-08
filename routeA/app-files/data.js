@@ -140,6 +140,12 @@ var APP_DATA = {
           "pitch": 0.08643628759648081,
           "title": "鵝湖入口",
           "text": "<br>"
+        },
+        {
+          "yaw": 2.6133594560036295,
+          "pitch": 0.10437742955619456,
+          "title": "<a href=\"../routeE/index.html?p=7\" style=\"text-decoration: underline; font-size: 24px;\">前往 E 路線 (E6)</a>",
+          "text": ""
         }
       ]
     },
@@ -635,6 +641,12 @@ var APP_DATA = {
           "pitch": -0.06485004360406776,
           "title": "科學館",
           "text": "<br>"
+        },
+        {
+          "yaw": -0.7121926129195959,
+          "pitch": -0.0012816472445749127,
+          "title": "<a href=\"../routeE/index.html?p=0\" style=\"text-decoration: underline; font-size: 24px;\">前往 E 路線 (E1)</a>",
+          "text": ""
         }
       ]
     }

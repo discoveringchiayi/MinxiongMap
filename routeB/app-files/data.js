@@ -36,7 +36,14 @@ var APP_DATA = {
           "target": "1--4"
         }
       ],
-      "infoHotspots": []
+      "infoHotspots": [
+        {
+          "yaw": 2.2311905476743803,
+          "pitch": 0.12212033042255221,
+          "title": "<a href=\"../routeE/index.html?p=0\" style=\"text-decoration: underline; font-size: 24px;\">返回 E 路線 (E1)</a>",
+          "text": ""
+        }
+      ]
     },
     {
       "id": "1--4",
@@ -128,14 +135,20 @@ var APP_DATA = {
           "pitch": 0.13984488409072782,
           "rotation": 0.7853981633974483,
           "target": "3--2"
+        },
+        {
+          "yaw": 0.13563476969833843,
+          "pitch": -0.03508752014210792,
+          "rotation": 0,
+          "target": "17-d-3new"
         }
       ],
       "infoHotspots": [
         {
-          "yaw": 0.017551355988889128,
-          "pitch": -0.006734436324830284,
+          "yaw": 0.020410634615275924,
+          "pitch": -0.23079032630012364,
           "title": "行政大樓",
-          "text": "<br>"
+          "text": ""
         }
       ]
     },
@@ -464,7 +477,14 @@ var APP_DATA = {
           "target": "8-b-6new"
         }
       ],
-      "infoHotspots": []
+      "infoHotspots": [
+        {
+          "yaw": -0.6833218879331824,
+          "pitch": 0.017620685044105855,
+          "title": "<a href=\"../routeC/index.html?p=0\" style=\"text-decoration: underline; font-size: 24px;\">返回 C 路線 (C1)</a>",
+          "text": ""
+        }
+      ]
     },
     {
       "id": "8-b-6new",
@@ -625,6 +645,12 @@ var APP_DATA = {
           "pitch": 0.0637116391239978,
           "rotation": 0,
           "target": "20-b-65"
+        },
+        {
+          "yaw": -0.6497568947321888,
+          "pitch": -0.04982527852143548,
+          "rotation": 0,
+          "target": "2--1"
         }
       ],
       "infoHotspots": [

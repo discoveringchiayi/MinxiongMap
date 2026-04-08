@@ -36,7 +36,20 @@ var APP_DATA = {
           "target": "1-e-15"
         }
       ],
-      "infoHotspots": []
+      "infoHotspots": [
+        {
+          "yaw": -2.216815230987363,
+          "pitch": 0.16797894553288195,
+          "title": "<a href=\"../routeA/index.html?p=12\" style=\"text-decoration: underline; font-size: 24px;\">前往 A 路線 (A8)</a>",
+          "text": ""
+        },
+        {
+          "yaw": 2.200114079349553,
+          "pitch": 0.08562655591033064,
+          "title": "<a href=\"../routeB/index.html?p=0\" style=\"text-decoration: underline; font-size: 24px;\">前往 B 路線 (B1)</a>",
+          "text": ""
+        }
+      ]
     },
     {
       "id": "1-e-15",
@@ -345,7 +358,14 @@ var APP_DATA = {
           "target": "6-e-5"
         }
       ],
-      "infoHotspots": []
+      "infoHotspots": [
+        {
+          "yaw": -0.6780621413115071,
+          "pitch": 0.03390722762265419,
+          "title": "<a href=\"../routeA/index.html?p=2\" style=\"text-decoration: underline; font-size: 24px;\">前往 A 路線 (E2)</a>",
+          "text": ""
+        }
+      ]
     }
   ],
   "name": "Project Title",
