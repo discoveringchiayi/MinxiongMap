@@ -389,7 +389,12 @@
     return null;
   }
 
-  // Display the initial scene.
-  switchScene(scenes[0]);
+ var params = new URLSearchParams(window.location.search);
+  var p = parseInt(params.get('p'));
+  if (!isNaN(p) && scenes[p]) {
+    switchScene(scenes[p]); // 如果網址有密碼，就去密碼指定的房間
+  } else {
+    switchScene(scenes[0]); // 如果沒有密碼，才乖乖回大廳(第 0 張圖)
+  }
 
 })();
