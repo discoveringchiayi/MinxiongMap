@@ -965,7 +965,7 @@ var APP_DATA = {
         {
           "yaw": 2.9236516977717777,
           "pitch": 0.023380480596422615,
-          "title": "<a href=\"../education hall/index.html?p=0\" style=\"text-decoration: underline; font-size: 24px;\">返回 教育館 路線 (1F大廳)</a>",
+          "title": "<a href=\"../education hall/index.html?p=0\" style=\"text-decoration: underline; font-size: 20px;\">返回 教育館 路線 (1F大廳)</a>",
           "text": ""
         }
       ]
