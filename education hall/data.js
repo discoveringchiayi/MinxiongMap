@@ -30,14 +30,14 @@ var APP_DATA = {
       },
       "linkHotspots": [
         {
-          "yaw": -2.330555298941821,
-          "pitch": 0.1545937979076104,
+          "yaw": -2.3277322103411286,
+          "pitch": 0.0553263113013589,
           "rotation": 1.5707963267948966,
           "target": "1-1f"
         },
         {
-          "yaw": 2.3898061690682155,
-          "pitch": 0.14679342173227283,
+          "yaw": 2.363818796421268,
+          "pitch": 0.06644625167145968,
           "rotation": 10.995574287564278,
           "target": "4-1f"
         },
@@ -54,7 +54,14 @@ var APP_DATA = {
           "target": "18-4f"
         }
       ],
-      "infoHotspots": []
+      "infoHotspots": [
+        {
+          "yaw": 0.00609265082663768,
+          "pitch": 0.017105480925561523,
+          "title": "<a href=\"../routeB/index.html?p=18\" style=\"text-decoration: underline; font-size: 24px;\">返回 B 路線 (D5)</a>",
+          "text": ""
+        }
+      ]
     },
     {
       "id": "1-1f",

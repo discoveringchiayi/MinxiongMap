@@ -957,15 +957,15 @@ var APP_DATA = {
       ],
       "infoHotspots": [
         {
-          "yaw": 2.8143943355928105,
-          "pitch": 0.03740022624703343,
-          "title": "教育館",
-          "text": ""
-        },
-        {
           "yaw": -0.11983747526515387,
           "pitch": -0.13791438819608537,
           "title": "圖書館",
+          "text": ""
+        },
+        {
+          "yaw": 2.9236516977717777,
+          "pitch": 0.023380480596422615,
+          "title": "<a href=\"../education hall/index.html?p=0\" style=\"text-decoration: underline; font-size: 24px;\">返回 教育館 路線 (1F大廳)</a>",
           "text": ""
         }
       ]
