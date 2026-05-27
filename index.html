@@ -7,7 +7,7 @@
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background-color: #f0f0f0;
             font-family: sans-serif;
         }
@@ -22,11 +22,12 @@
         }
 
         /* 地圖圖片本身 */
-        #map-image {
-            width: 100%;
-            height: auto;
-            display: block;
-            cursor: crosshair; /* 滑鼠變成十字，方便抓座標 */
+        #map-container {
+            position: relative;
+            width: 100%; /* 🌟 新增這行，讓地圖永遠填滿螢幕寬度 */
+            max-width: 100%; /* 🌟 解除原本 1000px 的封印 */
+            margin: 0; /* 🌟 把原本的 0 auto 歸零 */
+            border: none; /* 🌟 拿掉原本 2px 的灰色外框線 */
         }
 
         /* --- ThingLink 風格熱點設計 --- */
