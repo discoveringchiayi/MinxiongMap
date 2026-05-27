@@ -97,20 +97,20 @@
         #coord-helper { display: none; }
 
         /* ==========================================
-           🌟 新增：圖例面板的專屬設計
+           🌟 圖例面板的專屬設計
            ========================================== */
         #legend-panel {
-            position: fixed; /* 固定在畫面上，不會跟著地圖拖曳 */
+            position: fixed; 
             top: 20px;
-            right: 20px; /* 放在右上角空白處 */
-            background-color: rgba(40, 40, 40, 0.85); /* 半透明深色背景 */
+            right: 20px; 
+            background-color: rgba(40, 40, 40, 0.85); 
             color: white;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-            z-index: 100; /* 確保它浮在最上層 */
-            max-height: 80vh; /* 避免名單太長超過螢幕 */
-            overflow-y: auto; /* 名單太長時可以滑動 */
+            z-index: 100; 
+            max-height: 80vh; 
+            overflow-y: auto; 
         }
 
         #legend-panel h3 {
@@ -133,9 +133,18 @@
             margin-bottom: 12px;
             display: flex;
             align-items: center;
+            
+            /* 👇 新增：讓圖例變成可以點擊的按鈕外觀 */
+            cursor: pointer; 
+            transition: color 0.2s ease, transform 0.1s ease;
         }
 
-        /* 圖例裡面的小圈圈數字 */
+        /* 👇 新增：滑鼠移上去時，文字會變成水藍色並且微微放大 */
+        #legend-panel li:hover {
+            color: #00e5ff; 
+            transform: translateX(5px);
+        }
+
         #legend-panel .leg-num {
             display: inline-block;
             background-color: #00e5ff;
@@ -149,6 +158,8 @@
             margin-right: 12px;
             font-size: 16px;
             flex-shrink: 0;
+            /* 防止數字被 hover 變色影響 */
+            transition: none; 
         }
     </style>
 </head>
@@ -190,14 +201,20 @@
         const container = document.getElementById('map-container');
         const mapImage = document.getElementById('map-image');
         const viewport = document.getElementById('viewport');
-        const legendList = document.getElementById('legend-list'); // 抓取圖例清單的容器
+        const legendList = document.getElementById('legend-list'); 
 
         locations.forEach(loc => {
             // 1. 產生圖例項目
             if(loc.num) {
                 const li = document.createElement('li');
-                // 產生像 [1] 大門口 這樣的格式
-                li.innerHTML = `<span class="leg-num" style="background-color: ${loc.color};">${loc.num}</span> ${loc.name}`;
+                li.innerHTML = `<span class="leg-num" style="background-color: ${loc.color};">${loc.num}</span> <span class="leg-text">${loc.name}</span>`;
+                
+                // 👇 新增：幫圖例加上點擊事件，跟地圖上的熱點一樣可以另開新分頁！
+                li.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (loc.link) window.open(loc.link, '_blank');
+                });
+                
                 legendList.appendChild(li);
             }
 
@@ -266,7 +283,6 @@
         }, { passive: false });
 
         viewport.addEventListener('mousedown', (e) => {
-            // 如果點到熱點或是圖例面板，就不要觸發拖曳
             if (e.target.closest('.hotspot') || e.target.closest('#legend-panel')) return; 
             isDragging = true;
             startX = e.clientX - translateX;
