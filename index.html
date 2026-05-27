@@ -32,24 +32,23 @@
             cursor: grabbing; 
         }
 
-        /* 🌟 點點外觀再次升級放大！ */
         .hotspot {
             position: absolute;
             transform: translate(-50%, -50%);
-            width: 60px;  /* 從 45px 放大到 60px */
-            height: 60px; /* 從 45px 放大到 60px */
+            width: 60px;  
+            height: 60px; 
             background-color: white;
             border: 8px solid var(--theme-color, #00e5ff); 
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.5); /* 陰影加深讓立體感更好 */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
             z-index: 10;
             
             display: flex;
             justify-content: center;
             align-items: center;
             color: #333333; 
-            font-size: 32px; /* 裡面的數字也跟著放大 (從 24px 到 32px) */
+            font-size: 32px; 
             font-weight: 900; 
         }
 
@@ -75,7 +74,7 @@
         .hotspot::before {
             content: attr(data-name);
             position: absolute;
-            bottom: 105px; /* 因為圓點變大，所以標籤要再往上浮高一點點才不會重疊 */
+            bottom: 105px; 
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(40, 40, 40, 0.95); 
@@ -96,11 +95,72 @@
         }
 
         #coord-helper { display: none; }
+
+        /* ==========================================
+           🌟 新增：圖例面板的專屬設計
+           ========================================== */
+        #legend-panel {
+            position: fixed; /* 固定在畫面上，不會跟著地圖拖曳 */
+            top: 20px;
+            right: 20px; /* 放在右上角空白處 */
+            background-color: rgba(40, 40, 40, 0.85); /* 半透明深色背景 */
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            z-index: 100; /* 確保它浮在最上層 */
+            max-height: 80vh; /* 避免名單太長超過螢幕 */
+            overflow-y: auto; /* 名單太長時可以滑動 */
+        }
+
+        #legend-panel h3 {
+            margin: 0 0 15px 0;
+            font-size: 24px;
+            border-bottom: 2px solid #00e5ff;
+            padding-bottom: 10px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        #legend-panel ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #legend-panel li {
+            font-size: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 圖例裡面的小圈圈數字 */
+        #legend-panel .leg-num {
+            display: inline-block;
+            background-color: #00e5ff;
+            color: #333;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
 
     <div id="coord-helper"></div>
+
+    <div id="legend-panel">
+        <h3>📍 校園圖例</h3>
+        <ul id="legend-list">
+            </ul>
+    </div>
 
     <div id="viewport">
         <div id="map-container">
@@ -109,9 +169,6 @@
     </div>
 
     <script>
-        // ==========================================
-        // 🌟 資料區：已根據與「大門口」的直線距離重新編號排序！
-        // ==========================================
         const locations = [
             { num: "1",  id: 15, name: "大門口", x: 25.4, y: 62.5, color: "#00e5ff", link: "./routeB/index.html?p=5" },
             { num: "2",  id: 10, name: "科學館", x: 25.8, y: 49.0, color: "#00e5ff", link: "./routeA/index.html?p=12" },
@@ -133,8 +190,18 @@
         const container = document.getElementById('map-container');
         const mapImage = document.getElementById('map-image');
         const viewport = document.getElementById('viewport');
+        const legendList = document.getElementById('legend-list'); // 抓取圖例清單的容器
 
         locations.forEach(loc => {
+            // 1. 產生圖例項目
+            if(loc.num) {
+                const li = document.createElement('li');
+                // 產生像 [1] 大門口 這樣的格式
+                li.innerHTML = `<span class="leg-num" style="background-color: ${loc.color};">${loc.num}</span> ${loc.name}`;
+                legendList.appendChild(li);
+            }
+
+            // 2. 產生點點
             const dot = document.createElement('div');
             dot.className = 'hotspot';
             dot.style.left = loc.x + '%';
@@ -199,7 +266,8 @@
         }, { passive: false });
 
         viewport.addEventListener('mousedown', (e) => {
-            if (e.target.classList.contains('hotspot')) return; 
+            // 如果點到熱點或是圖例面板，就不要觸發拖曳
+            if (e.target.closest('.hotspot') || e.target.closest('#legend-panel')) return; 
             isDragging = true;
             startX = e.clientX - translateX;
             startY = e.clientY - translateY;
