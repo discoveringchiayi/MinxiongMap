@@ -8,45 +8,45 @@
         body {
             margin: 0;
             padding: 0;
-            /* 把網頁背景改成跟地圖底色相近的綠色，製造無邊界感 */
-            background-color: #8DC34A; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden; /* 隱藏多餘的捲軸 */
+            /* 🌟 顏色統一的關鍵：請把這個色碼換成你地圖周圍的精準綠色！ */
+            background-color: #8ECA45; 
+            overflow: hidden; /* 隱藏網頁原本的捲軸 */
+            font-family: sans-serif;
         }
 
-        /* 地圖容器，確保點點跟著地圖縮放 */
-        #map-container {
+        /* 攝影機鏡頭 (限制只能在螢幕範圍內看) */
+        #viewport {
+            width: 100vw;
+            height: 100vh;
             position: relative;
-            /* 讓容器變成緊身衣，完美貼合圖片邊緣，點點絕對不會跑位 */
-            display: inline-block; 
-            line-height: 0; /* 消除圖片下方預設的微小空白縫隙 */
+        }
+
+        /* 裝載地圖與點位的大群組 (我們縮放跟拖曳都是針對它) */
+        #map-container {
+            position: absolute;
+            transform-origin: 0 0; /* 確保從左上角為基準來計算縮放 */
         }
 
         /* 地圖圖片本身 */
         #map-image {
             display: block;
-            /* 限制圖片最大只能跟螢幕一樣大，達成全覽效果 */
-            max-width: 100vw; 
-            max-height: 100vh; 
-            width: auto;
-            height: auto;
-            cursor: crosshair; 
+            cursor: grab; /* 滑鼠變成小手手 */
+        }
+        #map-image:active {
+            cursor: grabbing; /* 拖曳時手握緊 */
         }
 
-        /* --- ThingLink 風格熱點設計 --- */
+        /* --- 點點設計 --- */
         .hotspot {
             position: absolute;
             transform: translate(-50%, -50%);
-            width: 15px;
-            height: 15px;
+            width: 18px; 
+            height: 18px;
             background-color: white;
-            border: 4px solid var(--theme-color, #00e5ff);
+            border: 5px solid var(--theme-color, #00e5ff);
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
             z-index: 10;
         }
 
@@ -60,218 +60,164 @@
             height: 200%;
             background-color: var(--theme-color, #00e5ff);
             border-radius: 50%;
-            opacity: 0.4;
+            opacity: 0.5;
             z-index: -1;
             animation: pulse 2s infinite ease-in-out;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.8); opacity: 0.6; }
-            100% { transform: scale(1.5); opacity: 0; }
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(1.8); opacity: 0; }
         }
 
-        /* 滑鼠移上去顯示建築物名稱 */
-        .hotspot:hover::before {
+        /* 🌟 改良版：超清晰的字體標籤 (參考附圖三的風格) */
+        .hotspot::before {
             content: attr(data-name);
             position: absolute;
             bottom: 35px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 14px;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-
-        /* 抓座標用的小工具面版 */
-        #coord-helper {
-            display: none; /* 已經設定隱形 */
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.8);
-            color: #00ffcc; 
-            padding: 15px;
+            background-color: rgba(40, 40, 40, 0.95); /* 深灰色背景 */
+            color: #ffffff; /* 純白粗體字 */
+            padding: 8px 14px;
             border-radius: 8px;
             font-size: 16px;
-            z-index: 100;
+            font-weight: bold;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none; /* 防止干擾點擊 */
+            transition: opacity 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
+
+        /* 滑鼠移上去時才會顯示名稱 */
+        .hotspot:hover::before {
+            opacity: 1;
+        }
+
+        /* 抓座標用的小工具面版 (已隱藏) */
+        #coord-helper { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="coord-helper">點擊地圖獲取座標...</div>
+    <div id="coord-helper"></div>
 
-    <div id="map-container">
-        <img id="map-image" src="Minxiong_map.png" alt="校區地圖">
+    <div id="viewport">
+        <div id="map-container">
+            <img id="map-image" src="Minxiong_map.png" alt="校區地圖" draggable="false">
+        </div>
     </div>
 
     <script>
         // ==========================================
-        // 🌟 超好改資料區
+        // 🌟 資料區：你的點位資料 (完全沒動)
         // ==========================================
         const locations = [
-            {
-                id: 1,
-                name: "初教館",
-                x: 48.9, 
-                y: 49.6, 
-                color: "#00e5ff", 
-                link: "./routeB/index.html?p=12"
-            },
-            {
-                id: 2,
-                name: "圖書館",
-                x: 53.7,  
-                y: 46.4,  
-                color: "#00e5ff",
-                link: "./routeB/index.html?p=15"
-            },
-            {
-                id: 3,
-                name: "民雄二宿",
-                x: 48.4,
-                y: 68.9,
-                color: "#00e5ff",
-                link: "./routeC/index.html?p=2"
-            },
-            {
-                id: 4,
-                name: "民雄一宿",
-                x: 41.3,
-                y: 65.0,
-                color: "#00e5ff",
-                link: "./routeC/index.html?p=0"
-            },
-            {
-                id: 5,
-                name: "學員餐廳",
-                x: 44.5,
-                y: 67.2,
-                color: "#00e5ff",
-                link: "./routeC/index.html?p=1"
-            },
-            {
-                id: 6,
-                name: "行政大樓",
-                x: 44.3,
-                y: 52.6,
-                color: "#00e5ff",
-                link: "./routeB/index.html?p=2"
-            },
-            {
-                id: 7,
-                name: "教育館",
-                x: 58.1,
-                y: 42.7,
-                color: "#00e5ff",
-                link: "./routeB/index.html?p=18"
-            },
-            {
-                id: 8,
-                name: "體育館（樂育堂）",
-                x: 54.0,
-                y: 66.8,
-                color: "#00e5ff",
-                link: "./routeC/index.html?p=2"
-            },
-            {
-                id: 9,
-                name: "新藝樓",
-                x: 34.8,
-                y: 20.5,
-                color: "#00e5ff",
-                link: "./routeA/index.html?p=0"
-            },
-            {
-                id: 10,
-                name: "科學館",
-                x: 25.8,
-                y: 49.0,
-                color: "#00e5ff",
-                link: "./routeA/index.html?p=12"
-            },
-            {
-                id: 11,
-                name: "人文館",
-                x: 19.5,
-                y: 44.9,
-                color: "#00e5ff",
-                link: "./routeA/index.html?p=10"
-            },
-            {
-                id: 12,
-                name: "大學館（禮堂）",
-                x: 32.2,
-                y: 39.7,
-                color: "#00e5ff",
-                link: "./routeA/index.html?p=8"
-            },
-            {
-                id: 13,
-                name: "創意樓",
-                x: 45.4,
-                y: 32.2,
-                color: "#00e5ff",
-                link: "./routeA/index.html?p=4"
-            },
-            {
-                id: 14,
-                name: "文薈廳",
-                x: 25.6,
-                y: 26.9,
-                color: "#00e5ff",
-                link: "./routeA/index.html?p=6"
-            },
-            {
-                id: 15,
-                name: "大門口",
-                x: 25.4,
-                y: 62.5,
-                color: "#00e5ff",
-                link: "./routeB/index.html?p=5"
-            },
+            { id: 1, name: "初教館", x: 48.9, y: 49.6, color: "#00e5ff", link: "./routeB/index.html?p=12" },
+            { id: 2, name: "圖書館", x: 53.7, y: 46.4, color: "#00e5ff", link: "./routeB/index.html?p=15" },
+            { id: 3, name: "民雄二宿", x: 48.4, y: 68.9, color: "#00e5ff", link: "./routeC/index.html?p=2" },
+            { id: 4, name: "民雄一宿", x: 41.3, y: 65.0, color: "#00e5ff", link: "./routeC/index.html?p=0" },
+            { id: 5, name: "學員餐廳", x: 44.5, y: 67.2, color: "#00e5ff", link: "./routeC/index.html?p=1" },
+            { id: 6, name: "行政大樓", x: 44.3, y: 52.6, color: "#00e5ff", link: "./routeB/index.html?p=2" },
+            { id: 7, name: "教育館", x: 58.1, y: 42.7, color: "#00e5ff", link: "./routeB/index.html?p=18" },
+            { id: 8, name: "體育館（樂育堂）", x: 54.0, y: 66.8, color: "#00e5ff", link: "./routeC/index.html?p=2" },
+            { id: 9, name: "新藝樓", x: 34.8, y: 20.5, color: "#00e5ff", link: "./routeA/index.html?p=0" },
+            { id: 10, name: "科學館", x: 25.8, y: 49.0, color: "#00e5ff", link: "./routeA/index.html?p=12" },
+            { id: 11, name: "人文館", x: 19.5, y: 44.9, color: "#00e5ff", link: "./routeA/index.html?p=10" },
+            { id: 12, name: "大學館（禮堂）", x: 32.2, y: 39.7, color: "#00e5ff", link: "./routeA/index.html?p=8" },
+            { id: 13, name: "創意樓", x: 45.4, y: 32.2, color: "#00e5ff", link: "./routeA/index.html?p=4" },
+            { id: 14, name: "文薈廳", x: 25.6, y: 26.9, color: "#00e5ff", link: "./routeA/index.html?p=6" },
+            { id: 15, name: "大門口", x: 25.4, y: 62.5, color: "#00e5ff", link: "./routeB/index.html?p=5" },
         ];
 
-        // ==========================================
-        // 主程式區
-        // ==========================================
         const container = document.getElementById('map-container');
         const mapImage = document.getElementById('map-image');
-        const coordHelper = document.getElementById('coord-helper');
+        const viewport = document.getElementById('viewport');
 
+        // 自動把資料區的點點畫上地圖
         locations.forEach(loc => {
             const dot = document.createElement('div');
             dot.className = 'hotspot';
             dot.style.left = loc.x + '%';
             dot.style.top = loc.y + '%';
-            dot.style.setProperty('--theme-color', loc.color); 
-            dot.setAttribute('data-name', loc.name); 
+            dot.style.setProperty('--theme-color', loc.color);
+            dot.setAttribute('data-name', loc.name);
 
-            dot.addEventListener('click', () => {
+            dot.addEventListener('click', (e) => {
+                e.stopPropagation(); // 防止點擊跳轉時觸發拖曳
                 if (loc.link) window.open(loc.link, '_blank');
             });
-
             container.appendChild(dot);
         });
 
-        mapImage.addEventListener('click', function(event) {
-            const rect = mapImage.getBoundingClientRect();
-            const xPercent = ((event.clientX - rect.left) / rect.width * 100).toFixed(1);
-            const yPercent = ((event.clientY - rect.top) / rect.height * 100).toFixed(1);
+        // ==========================================
+        // 🌟 滑鼠滾輪縮放與拖曳功能 (你朋友地圖的核心技術)
+        // ==========================================
+        let currentScale = 1;
+        let translateX = 0;
+        let translateY = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+
+        function updateTransform() {
+            container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+        }
+
+        // 當圖片載入完成，自動將地圖置中並適當縮小以滿版呈現
+        function initMapView() {
+            const ratioX = window.innerWidth / mapImage.naturalWidth;
+            const ratioY = window.innerHeight / mapImage.naturalHeight;
+            // 縮小到剛好放進螢幕再小一點點
+            currentScale = Math.min(ratioX, ratioY) * 0.85; 
             
-            coordHelper.innerHTML = `
-                剛剛點擊的位置：<br>
-                <b>x: ${xPercent},</b><br>
-                <b>y: ${yPercent},</b><br>
-                <span style="font-size:12px; color:#aaa;">(把這兩行抄進資料區就好)</span>
-            `;
+            // 計算置中位置
+            translateX = (window.innerWidth - (mapImage.naturalWidth * currentScale)) / 2;
+            translateY = (window.innerHeight - (mapImage.naturalHeight * currentScale)) / 2;
+            updateTransform();
+        }
+
+        mapImage.onload = initMapView;
+        if(mapImage.complete) initMapView();
+
+        // 監聽滑鼠滾輪 (放大/縮小)
+        viewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomIntensity = 0.1; // 縮放的速度
+            const delta = e.deltaY > 0 ? -zoomIntensity : zoomIntensity;
             
-            console.log(`x: ${xPercent}, \ny: ${yPercent},`);
+            // 讓縮放以「滑鼠游標的位置」為中心點
+            const mouseX = e.clientX - translateX;
+            const mouseY = e.clientY - translateY;
+            
+            const newScale = Math.min(Math.max(0.2, currentScale + delta), 3); // 限制最小與最大縮放值
+            
+            translateX -= mouseX * (newScale / currentScale - 1);
+            translateY -= mouseY * (newScale / currentScale - 1);
+            
+            currentScale = newScale;
+            updateTransform();
+        }, { passive: false });
+
+        // 監聽滑鼠拖曳
+        viewport.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('hotspot')) return; // 點擊按鈕時不要拖曳
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
         });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            updateTransform();
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; });
+        window.addEventListener('mouseleave', () => { isDragging = false; });
+
     </script>
 </body>
 </html>
