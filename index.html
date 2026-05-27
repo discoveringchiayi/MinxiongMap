@@ -32,26 +32,25 @@
             cursor: grabbing; 
         }
 
-        /* 🌟 點點外觀：加入了數字置中的設定 */
+        /* 🌟 點點外觀再次升級放大！ */
         .hotspot {
             position: absolute;
             transform: translate(-50%, -50%);
-            width: 45px;  
-            height: 45px; 
+            width: 60px;  /* 從 45px 放大到 60px */
+            height: 60px; /* 從 45px 放大到 60px */
             background-color: white;
             border: 8px solid var(--theme-color, #00e5ff); 
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5); /* 陰影加深讓立體感更好 */
             z-index: 10;
             
-            /* 👇 讓數字完美置中的魔法 */
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #333333; /* 數字的顏色(深灰色) */
-            font-size: 24px; /* 數字的大小 */
-            font-weight: 900; /* 數字加粗 */
+            color: #333333; 
+            font-size: 32px; /* 裡面的數字也跟著放大 (從 24px 到 32px) */
+            font-weight: 900; 
         }
 
         .hotspot::after {
@@ -76,7 +75,7 @@
         .hotspot::before {
             content: attr(data-name);
             position: absolute;
-            bottom: 85px; 
+            bottom: 105px; /* 因為圓點變大，所以標籤要再往上浮高一點點才不會重疊 */
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(40, 40, 40, 0.95); 
@@ -111,24 +110,24 @@
 
     <script>
         // ==========================================
-        // 🌟 資料區：新增了 num 屬性來控制數字！
+        // 🌟 資料區：已根據與「大門口」的直線距離重新編號排序！
         // ==========================================
         const locations = [
-            { num: "1", id: 15, name: "大門口", x: 25.4, y: 62.5, color: "#00e5ff", link: "./routeB/index.html?p=5" },
-            { num: "2", id: 1, name: "初教館", x: 48.9, y: 49.6, color: "#00e5ff", link: "./routeB/index.html?p=12" },
-            { num: "3", id: 2, name: "圖書館", x: 53.7, y: 46.4, color: "#00e5ff", link: "./routeB/index.html?p=15" },
-            { num: "4", id: 3, name: "民雄二宿", x: 48.4, y: 68.9, color: "#00e5ff", link: "./routeC/index.html?p=2" },
-            { num: "5", id: 4, name: "民雄一宿", x: 41.3, y: 65.0, color: "#00e5ff", link: "./routeC/index.html?p=0" },
-            { num: "6", id: 5, name: "學員餐廳", x: 44.5, y: 67.2, color: "#00e5ff", link: "./routeC/index.html?p=1" },
-            { num: "7", id: 6, name: "行政大樓", x: 44.3, y: 52.6, color: "#00e5ff", link: "./routeB/index.html?p=2" },
-            { num: "8", id: 7, name: "教育館", x: 58.1, y: 42.7, color: "#00e5ff", link: "./routeB/index.html?p=18" },
-            { num: "9", id: 8, name: "體育館（樂育堂）", x: 54.0, y: 66.8, color: "#00e5ff", link: "./routeC/index.html?p=2" },
-            { num: "10", id: 9, name: "新藝樓", x: 34.8, y: 20.5, color: "#00e5ff", link: "./routeA/index.html?p=0" },
-            { num: "11", id: 10, name: "科學館", x: 25.8, y: 49.0, color: "#00e5ff", link: "./routeA/index.html?p=12" },
-            { num: "12", id: 11, name: "人文館", x: 19.5, y: 44.9, color: "#00e5ff", link: "./routeA/index.html?p=10" },
-            { num: "13", id: 12, name: "大學館（禮堂）", x: 32.2, y: 39.7, color: "#00e5ff", link: "./routeA/index.html?p=8" },
-            { num: "14", id: 13, name: "創意樓", x: 45.4, y: 32.2, color: "#00e5ff", link: "./routeA/index.html?p=4" },
-            { num: "15", id: 14, name: "文薈廳", x: 25.6, y: 26.9, color: "#00e5ff", link: "./routeA/index.html?p=6" },
+            { num: "1",  id: 15, name: "大門口", x: 25.4, y: 62.5, color: "#00e5ff", link: "./routeB/index.html?p=5" },
+            { num: "2",  id: 10, name: "科學館", x: 25.8, y: 49.0, color: "#00e5ff", link: "./routeA/index.html?p=12" },
+            { num: "3",  id: 4,  name: "民雄一宿", x: 41.3, y: 65.0, color: "#00e5ff", link: "./routeC/index.html?p=0" },
+            { num: "4",  id: 11, name: "人文館", x: 19.5, y: 44.9, color: "#00e5ff", link: "./routeA/index.html?p=10" },
+            { num: "5",  id: 5,  name: "學員餐廳", x: 44.5, y: 67.2, color: "#00e5ff", link: "./routeC/index.html?p=1" },
+            { num: "6",  id: 6,  name: "行政大樓", x: 44.3, y: 52.6, color: "#00e5ff", link: "./routeB/index.html?p=2" },
+            { num: "7",  id: 12, name: "大學館（禮堂）", x: 32.2, y: 39.7, color: "#00e5ff", link: "./routeA/index.html?p=8" },
+            { num: "8",  id: 3,  name: "民雄二宿", x: 48.4, y: 68.9, color: "#00e5ff", link: "./routeC/index.html?p=2" },
+            { num: "9",  id: 1,  name: "初教館", x: 48.9, y: 49.6, color: "#00e5ff", link: "./routeB/index.html?p=12" },
+            { num: "10", id: 8,  name: "體育館（樂育堂）", x: 54.0, y: 66.8, color: "#00e5ff", link: "./routeC/index.html?p=2" },
+            { num: "11", id: 2,  name: "圖書館", x: 53.7, y: 46.4, color: "#00e5ff", link: "./routeB/index.html?p=15" },
+            { num: "12", id: 14, name: "文薈廳", x: 25.6, y: 26.9, color: "#00e5ff", link: "./routeA/index.html?p=6" },
+            { num: "13", id: 13, name: "創意樓", x: 45.4, y: 32.2, color: "#00e5ff", link: "./routeA/index.html?p=4" },
+            { num: "14", id: 7,  name: "教育館", x: 58.1, y: 42.7, color: "#00e5ff", link: "./routeB/index.html?p=18" },
+            { num: "15", id: 9,  name: "新藝樓", x: 34.8, y: 20.5, color: "#00e5ff", link: "./routeA/index.html?p=0" },
         ];
 
         const container = document.getElementById('map-container');
@@ -143,7 +142,6 @@
             dot.style.setProperty('--theme-color', loc.color);
             dot.setAttribute('data-name', loc.name);
             
-            // 🌟 幫點點塞入你設定好的數字
             if(loc.num) {
                 dot.textContent = loc.num;
             }
