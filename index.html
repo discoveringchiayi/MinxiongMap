@@ -8,49 +8,46 @@
         body {
             margin: 0;
             padding: 0;
-            /* 🌟 顏色統一的關鍵：請把這個色碼換成你地圖周圍的精準綠色！ */
-            background-color: #8ECA45; 
-            overflow: hidden; /* 隱藏網頁原本的捲軸 */
+            /* 🌟 修改 1：背景色調整。我幫你抓了一個更接近地圖底色的深綠色。
+               如果還是有一點點色差，請調整這個 #629E2F 色碼 */
+            background-color: #629E2F; 
+            overflow: hidden; 
             font-family: sans-serif;
         }
 
-        /* 攝影機鏡頭 (限制只能在螢幕範圍內看) */
         #viewport {
             width: 100vw;
             height: 100vh;
             position: relative;
         }
 
-        /* 裝載地圖與點位的大群組 (我們縮放跟拖曳都是針對它) */
         #map-container {
             position: absolute;
-            transform-origin: 0 0; /* 確保從左上角為基準來計算縮放 */
+            transform-origin: 0 0; 
         }
 
-        /* 地圖圖片本身 */
         #map-image {
             display: block;
-            cursor: grab; /* 滑鼠變成小手手 */
+            cursor: grab; 
         }
         #map-image:active {
-            cursor: grabbing; /* 拖曳時手握緊 */
+            cursor: grabbing; 
         }
 
-        /* --- 點點設計 --- */
+        /* 🌟 修改 2：把點點的「基礎尺寸」放大 2.5 倍！這樣縮放後依然清楚 */
         .hotspot {
             position: absolute;
             transform: translate(-50%, -50%);
-            width: 18px; 
-            height: 18px;
+            width: 45px;  /* 原本 18px，放大！ */
+            height: 45px; /* 原本 18px，放大！ */
             background-color: white;
-            border: 5px solid var(--theme-color, #00e5ff);
+            border: 8px solid var(--theme-color, #00e5ff); /* 邊框也加粗 */
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
             z-index: 10;
         }
 
-        /* 呼吸燈動畫效果 */
         .hotspot::after {
             content: '';
             position: absolute;
@@ -70,32 +67,30 @@
             100% { transform: scale(1.8); opacity: 0; }
         }
 
-        /* 🌟 改良版：超清晰的字體標籤 (參考附圖三的風格) */
+        /* 🌟 修改 3：把文字標籤的字體跟框框放大！ */
         .hotspot::before {
             content: attr(data-name);
             position: absolute;
-            bottom: 35px;
+            bottom: 70px; /* 為了配合變大的點點，字要再往上移一點 */
             left: 50%;
             transform: translateX(-50%);
-            background-color: rgba(40, 40, 40, 0.95); /* 深灰色背景 */
-            color: #ffffff; /* 純白粗體字 */
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 16px;
+            background-color: rgba(40, 40, 40, 0.95); 
+            color: #ffffff; 
+            padding: 12px 24px; /* 原本 8px 14px，把黑框撐大 */
+            border-radius: 12px;
+            font-size: 36px; /* 原本 16px，字體直接放大超過兩倍！ */
             font-weight: bold;
             white-space: nowrap;
             opacity: 0;
-            pointer-events: none; /* 防止干擾點擊 */
+            pointer-events: none; 
             transition: opacity 0.2s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
         }
 
-        /* 滑鼠移上去時才會顯示名稱 */
         .hotspot:hover::before {
             opacity: 1;
         }
 
-        /* 抓座標用的小工具面版 (已隱藏) */
         #coord-helper { display: none; }
     </style>
 </head>
@@ -111,7 +106,7 @@
 
     <script>
         // ==========================================
-        // 🌟 資料區：你的點位資料 (完全沒動)
+        // 資料區：你的點位資料
         // ==========================================
         const locations = [
             { id: 1, name: "初教館", x: 48.9, y: 49.6, color: "#00e5ff", link: "./routeB/index.html?p=12" },
@@ -135,7 +130,6 @@
         const mapImage = document.getElementById('map-image');
         const viewport = document.getElementById('viewport');
 
-        // 自動把資料區的點點畫上地圖
         locations.forEach(loc => {
             const dot = document.createElement('div');
             dot.className = 'hotspot';
@@ -145,14 +139,14 @@
             dot.setAttribute('data-name', loc.name);
 
             dot.addEventListener('click', (e) => {
-                e.stopPropagation(); // 防止點擊跳轉時觸發拖曳
+                e.stopPropagation(); 
                 if (loc.link) window.open(loc.link, '_blank');
             });
             container.appendChild(dot);
         });
 
         // ==========================================
-        // 🌟 滑鼠滾輪縮放與拖曳功能 (你朋友地圖的核心技術)
+        // 攝影機縮放與拖曳功能
         // ==========================================
         let currentScale = 1;
         let translateX = 0;
@@ -165,14 +159,14 @@
             container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
         }
 
-        // 當圖片載入完成，自動將地圖置中並適當縮小以滿版呈現
+        // 🌟 修改 4：調整初始地圖大小
         function initMapView() {
             const ratioX = window.innerWidth / mapImage.naturalWidth;
             const ratioY = window.innerHeight / mapImage.naturalHeight;
-            // 縮小到剛好放進螢幕再小一點點
-            currentScale = Math.min(ratioX, ratioY) * 0.85; 
             
-            // 計算置中位置
+            // 原本是 * 0.85 (縮很小)，現在改成 * 1.15，讓地圖一開始預設放大一點！
+            currentScale = Math.min(ratioX, ratioY) * 1.15; 
+            
             translateX = (window.innerWidth - (mapImage.naturalWidth * currentScale)) / 2;
             translateY = (window.innerHeight - (mapImage.naturalHeight * currentScale)) / 2;
             updateTransform();
@@ -181,17 +175,15 @@
         mapImage.onload = initMapView;
         if(mapImage.complete) initMapView();
 
-        // 監聽滑鼠滾輪 (放大/縮小)
         viewport.addEventListener('wheel', (e) => {
             e.preventDefault();
-            const zoomIntensity = 0.1; // 縮放的速度
+            const zoomIntensity = 0.1; 
             const delta = e.deltaY > 0 ? -zoomIntensity : zoomIntensity;
             
-            // 讓縮放以「滑鼠游標的位置」為中心點
             const mouseX = e.clientX - translateX;
             const mouseY = e.clientY - translateY;
             
-            const newScale = Math.min(Math.max(0.2, currentScale + delta), 3); // 限制最小與最大縮放值
+            const newScale = Math.min(Math.max(0.2, currentScale + delta), 4); // 最大允許放到 4 倍
             
             translateX -= mouseX * (newScale / currentScale - 1);
             translateY -= mouseY * (newScale / currentScale - 1);
@@ -200,9 +192,8 @@
             updateTransform();
         }, { passive: false });
 
-        // 監聽滑鼠拖曳
         viewport.addEventListener('mousedown', (e) => {
-            if (e.target.classList.contains('hotspot')) return; // 點擊按鈕時不要拖曳
+            if (e.target.classList.contains('hotspot')) return; 
             isDragging = true;
             startX = e.clientX - translateX;
             startY = e.clientY - translateY;
