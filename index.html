@@ -8,9 +8,8 @@
         body {
             margin: 0;
             padding: 0;
-            /* 🌟 修改 1：背景色調整。我幫你抓了一個更接近地圖底色的深綠色。
-               如果還是有一點點色差，請調整這個 #629E2F 色碼 */
-            background-color: #629E2F; 
+            /* 🌟 修改 1：換回地圖內部的淺綠色 */
+            background-color: #8ECA45; 
             overflow: hidden; 
             font-family: sans-serif;
         }
@@ -34,14 +33,13 @@
             cursor: grabbing; 
         }
 
-        /* 🌟 修改 2：把點點的「基礎尺寸」放大 2.5 倍！這樣縮放後依然清楚 */
         .hotspot {
             position: absolute;
             transform: translate(-50%, -50%);
-            width: 45px;  /* 原本 18px，放大！ */
-            height: 45px; /* 原本 18px，放大！ */
+            width: 45px;  
+            height: 45px; 
             background-color: white;
-            border: 8px solid var(--theme-color, #00e5ff); /* 邊框也加粗 */
+            border: 8px solid var(--theme-color, #00e5ff); 
             border-radius: 50%;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
@@ -67,18 +65,18 @@
             100% { transform: scale(1.8); opacity: 0; }
         }
 
-        /* 🌟 修改 3：把文字標籤的字體跟框框放大！ */
+        /* 🌟 修改 2：字體與黑框終極巨大化 */
         .hotspot::before {
             content: attr(data-name);
             position: absolute;
-            bottom: 70px; /* 為了配合變大的點點，字要再往上移一點 */
+            bottom: 85px; /* 為了配合變大的字，標籤再往上浮一點，避免擋住藍點 */
             left: 50%;
             transform: translateX(-50%);
             background-color: rgba(40, 40, 40, 0.95); 
             color: #ffffff; 
-            padding: 12px 24px; /* 原本 8px 14px，把黑框撐大 */
-            border-radius: 12px;
-            font-size: 36px; /* 原本 16px，字體直接放大超過兩倍！ */
+            padding: 16px 32px; /* 框框撐大，看起來更大氣 */
+            border-radius: 16px; /* 邊角變得更圓滑 */
+            font-size: 56px; /* 🌟 字體直接從 36px 飆升到 56px！ */
             font-weight: bold;
             white-space: nowrap;
             opacity: 0;
@@ -159,12 +157,10 @@
             container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
         }
 
-        // 🌟 修改 4：調整初始地圖大小
         function initMapView() {
             const ratioX = window.innerWidth / mapImage.naturalWidth;
             const ratioY = window.innerHeight / mapImage.naturalHeight;
             
-            // 原本是 * 0.85 (縮很小)，現在改成 * 1.15，讓地圖一開始預設放大一點！
             currentScale = Math.min(ratioX, ratioY) * 1.15; 
             
             translateX = (window.innerWidth - (mapImage.naturalWidth * currentScale)) / 2;
@@ -183,7 +179,7 @@
             const mouseX = e.clientX - translateX;
             const mouseY = e.clientY - translateY;
             
-            const newScale = Math.min(Math.max(0.2, currentScale + delta), 4); // 最大允許放到 4 倍
+            const newScale = Math.min(Math.max(0.2, currentScale + delta), 4);
             
             translateX -= mouseX * (newScale / currentScale - 1);
             translateY -= mouseY * (newScale / currentScale - 1);
